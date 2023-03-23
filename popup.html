@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <h1>Time Tracker</h1>
+  <div id="time-tracker">
+    <button id="entry-leave-btn">Entry / Leave</button>
+    <button id="download-btn" style="display:none;">Download CSV</button>
+  </div>
+  <div id="tabs">
+    <button id="weekly-tab">Weekly</button>
+    <button id="monthly-tab">Monthly</button>
+  </div>
+  <div id="hours-summary">
+    <table>
+      <thead>
+        <tr>
+          <th>Period</th>
+          <th>Hours</th>
+        </tr>
+      </thead>
+      <tbody id="summary-table">
+      </tbody>
+    </table>
+  </div>
+  <script src="popup.js"></script>
+</body>
+</html>

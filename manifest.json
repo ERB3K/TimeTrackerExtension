@@ -1,0 +1,14 @@
+{
+  "manifest_version": 3,
+  "name": "Time Tracker",
+  "version": "1.0",
+  "description": "Track your time by entering and leaving time slots.",
+  "action": {
+    "default_icon": "icon.png",
+    "default_popup": "popup.html"
+  },
+  "permissions": ["storage"],
+  "icons": {
+    "48": "icon.png"
+  }
+}
