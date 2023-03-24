@@ -75,6 +75,21 @@ async function saveCompletedCycles(cycle) {
   await chrome.storage.local.set({ [entryKey]: cycle.entry, [leaveKey]: cycle.leave });
 }
 
+function formatDate(date) {
+  const gmt3Offset = -3 * 60 * 60 * 1000;
+  const localDate = new Date(date.getTime() + gmt3Offset);
+
+  const day = String(localDate.getUTCDate()).padStart(2, '0');
+  const month = String(localDate.getUTCMonth() + 1).padStart(2, '0');
+  const year = localDate.getUTCFullYear();
+
+  const hours = String(localDate.getUTCHours()).padStart(2, '0');
+  const minutes = String(localDate.getUTCMinutes()).padStart(2, '0');
+  const seconds = String(localDate.getUTCSeconds()).padStart(2, '0');
+
+  return `${day}/${month}/${year} ${hours}:${minutes}:${seconds}`;
+}
+
 function downloadCSV() {
   const header = 'Entry,Leave,Duration (hours)\n';
   const rows = completedCycles.map((cycle) => {
@@ -83,7 +98,7 @@ function downloadCSV() {
       return '';
     }
     const durationHours = ((cycle.leave - cycle.entry) / 3600000).toFixed(2);
-    return `${cycle.entry.toISOString()},${cycle.leave.toISOString()},${durationHours}\n`;
+    return `${formatDate(cycle.entry)},${formatDate(cycle.leave)},${durationHours}\n`;
   });
 
   const csvContent = header + rows.join('');
