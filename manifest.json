@@ -9,6 +9,6 @@
   },
   "permissions": ["storage"],
   "icons": {
-    "48": "icon.png"
+    "128": "Clock-icon.png"
   }
 }

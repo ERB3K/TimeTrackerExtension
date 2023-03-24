@@ -1,24 +1,28 @@
 <!DOCTYPE html>
 <html>
 <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ERB</title>
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-  <h1>Time Tracker</h1>
+  <h1>Relógio Ponto</h1>
   <div id="time-tracker">
-    <button id="entry-leave-btn">Entry / Leave</button>
+    <button id="entry-leave-btn">Entrada / Saída</button>
     <button id="download-btn" style="display:none;">Download CSV</button>
   </div>
   <div id="tabs">
-    <button id="weekly-tab">Weekly</button>
-    <button id="monthly-tab">Monthly</button>
+    <button id="weekly-tab">Semanal</button>
+    <button id="monthly-tab">Mensal</button>
+    <button id="clear-data-btn">Limpar Dados</button>
   </div>
   <div id="hours-summary">
     <table>
       <thead>
         <tr>
-          <th>Period</th>
-          <th>Hours</th>
+          <th>Período</th>
+          <th>Horas</th>
         </tr>
       </thead>
       <tbody id="summary-table">
