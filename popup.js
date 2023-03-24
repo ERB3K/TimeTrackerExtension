@@ -69,8 +69,10 @@ async function updateSummary() {
   displaySummary(summary);
 }
 
-async function saveCompletedCycles() {
-  await chrome.storage.local.set({ completedCycles });
+async function saveCompletedCycles(cycle) {
+  const entryKey = `entry_${cycle.entry.toISOString()}`;
+  const leaveKey = `leave_${cycle.leave.toISOString()}`;
+  await chrome.storage.local.set({ [entryKey]: cycle.entry, [leaveKey]: cycle.leave });
 }
 
 function downloadCSV() {
@@ -98,10 +100,11 @@ entryLeaveBtn.addEventListener('click', async () => {
     entryLeaveBtn.textContent = 'Leave';
   } else {
     const leaveTime = new Date();
-    completedCycles.push({ entry: currentEntry, leave: leaveTime });
+    const newCycle = { entry: currentEntry, leave: leaveTime };
+    completedCycles.push(newCycle);
     currentEntry = null;
     entryLeaveBtn.textContent = 'Entry';
-    await saveCompletedCycles(); // Save completed cycles to local storage
+    await saveCompletedCycles(newCycle); // Pass the new cycle
     await updateSummary();
 
     // Show the download button when there's at least one completed cycle
