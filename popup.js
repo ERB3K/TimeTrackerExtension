@@ -38,34 +38,28 @@ function getPeriod(date, type) {
 }
 
 async function updateSummary() {
-  const entries = await chrome.storage.local.get(null);
+  const { completedCycles: storedCycles } = await chrome.storage.local.get('completedCycles');
+  if (storedCycles) {
+    completedCycles = storedCycles.map(({ entry, leave }) => ({ entry: new Date(entry), leave: new Date(leave) }));
+  }
 
   const summary = {};
-  let currentEntry = null;
+  for (const cycle of completedCycles) {
+    const entry = cycle.entry;
+    const leave = cycle.leave;
 
-  for (const key in entries) {
-    const entryType = key.split('_')[0];
-    const timestamp = new Date(entries[key]);
-
-    if (entryType === 'entry') {
-      currentEntry = timestamp;
-    } else if (entryType === 'leave' && currentEntry) {
-      const period = getPeriod(currentEntry, viewType);
-      const duration = timestamp - currentEntry;
+    if (entry && leave) {
+      const period = getPeriod(entry, viewType);
+      const duration = leave - entry;
 
       if (summary[period]) {
         summary[period] += duration;
       } else {
         summary[period] = duration;
       }
-
-      currentEntry = null;
     }
   }
-  const { completedCycles: storedCycles } = await chrome.storage.local.get('completedCycles');
-  if (storedCycles) {
-    completedCycles = storedCycles.map(({ entry, leave }) => ({ entry: new Date(entry), leave: new Date(leave) }));
-  }
+
   displaySummary(summary);
 }
 
@@ -74,6 +68,14 @@ async function saveCompletedCycles(cycle) {
   const leaveKey = `leave_${cycle.leave.toISOString()}`;
   await chrome.storage.local.set({ [entryKey]: cycle.entry, [leaveKey]: cycle.leave });
 }
+
+const clearDataBtn = document.getElementById('clear-data-btn');
+
+clearDataBtn.addEventListener('click', async () => {
+  await chrome.storage.local.clear();
+  completedCycles = [];
+  updateSummary();
+});
 
 function formatDate(date) {
   const gmt3Offset = -3 * 60 * 60 * 1000;
