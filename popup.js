@@ -8,6 +8,18 @@ let viewType = 'weekly'; // Default view is weekly
 let currentEntry = null;
 let completedCycles = [];
 
+// Load completed cycles in the startup
+async function loadCompletedCycles() {
+  const data = await chrome.storage.local.get('completedCycles');
+  if (data.completedCycles) {
+    completedCycles = data.completedCycles.map(cycle => ({
+      entry: new Date(cycle.entry), // Converta de volta para objeto Date
+      leave: new Date(cycle.leave)  // Converta de volta para objeto Date
+    }));
+  }
+  updateSummary();
+}
+
 async function displaySummary(summary) {
   // Clear previous summary table content
   summaryTable.innerHTML = '';
@@ -38,11 +50,6 @@ function getPeriod(date, type) {
 }
 
 async function updateSummary() {
-  const { completedCycles: storedCycles } = await chrome.storage.local.get('completedCycles');
-  if (storedCycles) {
-    completedCycles = storedCycles.map(({ entry, leave }) => ({ entry: new Date(entry), leave: new Date(leave) }));
-  }
-
   const summary = {};
   for (const cycle of completedCycles) {
     const entry = cycle.entry;
@@ -63,10 +70,12 @@ async function updateSummary() {
   displaySummary(summary);
 }
 
-async function saveCompletedCycles(cycle) {
-  const entryKey = `entry_${cycle.entry.toISOString()}`;
-  const leaveKey = `leave_${cycle.leave.toISOString()}`;
-  await chrome.storage.local.set({ [entryKey]: cycle.entry, [leaveKey]: cycle.leave });
+async function saveCompletedCycles() {
+  const cyclesToSave = completedCycles.map(cycle => ({
+    entry: cycle.entry.toISOString(), // Converta para string ISO
+    leave: cycle.leave.toISOString()  // Converta para string ISO
+  }));
+  await chrome.storage.local.set({ completedCycles: cyclesToSave });
 }
 
 const clearDataBtn = document.getElementById('clear-data-btn');
@@ -121,7 +130,7 @@ entryLeaveBtn.addEventListener('click', async () => {
     completedCycles.push(newCycle);
     currentEntry = null;
     entryLeaveBtn.textContent = 'Entry';
-    await saveCompletedCycles(newCycle); // Pass the new cycle
+    await saveCompletedCycles(); // Atualize para chamar a função modificada
     await updateSummary();
 
     // Show the download button when there's at least one completed cycle
@@ -145,4 +154,4 @@ monthlyTab.addEventListener('click', async () => {
   await updateSummary();
 });
 
-updateSummary();
+loadCompletedCycles();
